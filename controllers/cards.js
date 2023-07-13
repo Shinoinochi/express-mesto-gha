@@ -64,7 +64,7 @@ const likeCard = (req, res) => {
   Card.findByIdAndUpdate(req.params.cardId, { $addToSet: { likes: req.user._id } }, { new: true })
     .then(card => {
       if(!card) {
-        res.status(BAD_REQUEST).send({ message: 'Неверный ID карточки' })
+        res.status(NOT_FOUND).send({ message: 'Неверный ID карточки' })
       }
       else {
         res.send({ card })
@@ -72,7 +72,7 @@ const likeCard = (req, res) => {
     })
     .catch((err) => {
       if(err.name === 'CastError') {
-        res.status(NOT_FOUND).send({ message: 'Несуществующий ID карточки' })
+        res.status(BAD_REQUEST).send({ message: 'Несуществующий ID карточки' })
       }
       if (err.name === 'NotFound') {
         res.status(BAD_REQUEST).send({ message: 'Неверно переданы данные' })
