@@ -12,9 +12,7 @@ const getCards = (req, res) => {
         res.send({ cards })
       )
     })
-    .catch(err => {
-      res.status(BAD_REQUEST).send({ message: 'Ошибка ввода данных' })
-    });
+    .catch(() => res.status(SERVER_ERROR).send({ message: 'Ошибка сервера' }));
 };
 
 const createCard = (req, res) => {
@@ -25,7 +23,12 @@ const createCard = (req, res) => {
       res.send({ card })
     })
     .catch(err => {
-      res.status(BAD_REQUEST).send({ message: 'Ошибка ввода данных' })
+      if(err.name === 'ValidationError') {
+        res.status(BAD_REQUEST).send({ message: 'Ошибка ввода данных' })
+      }
+      else{
+        res.status(SERVER_ERROR).send({ message: 'Ошибка сервера' })
+      }
     });
 };
 
@@ -33,7 +36,7 @@ const deleteCard = (req, res) => {
   const { _id } = req.body;
   Card.findByIdAndRemove({ _id })
     .then(card => res.send({ card }))
-    .catch(err => res.status(SERVER_ERROR).send({ message: err.message }));
+    .catch(() => res.status(SERVER_ERROR).send({ message: 'Ошибка сервера' }));
 };
 
 const likeCard = (req, res) => {
@@ -41,14 +44,14 @@ const likeCard = (req, res) => {
   console.log(req.params.cardId, req.user._id);
   Card.findByIdAndUpdate(_id, { $addToSet: { likes: req.user._id } }, { new: true })
     .then(card => res.send({ card }))
-    .catch(err => res.status(SERVER_ERROR).send({ message: err.message }));
+    .catch(() => res.status(SERVER_ERROR).send({ message: 'Ошибка сервера' }));
 };
 
 const dislikeCard = (req, res) => {
   const { _id } = req.body;
   Card.findByIdAndUpdate(_id, { $pull: { likes: req.user._id } }, { new: true })
     .then(card => res.send({ card }))
-    .catch(err => res.status(SERVER_ERROR).send({ message: err.message }));
+    .catch(() => res.status(SERVER_ERROR).send({ message: 'Ошибка сервера' }));
 };
 
 module.exports = {
