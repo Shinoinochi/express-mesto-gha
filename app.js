@@ -22,5 +22,5 @@ app.use('/cards', require('./routes/cards'));
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.listen(PORT, () => {
-  console.log('Ссылка на сервер');
+  console.log('Сервер запущен на порту ' + PORT);
 });
