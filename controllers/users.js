@@ -16,8 +16,9 @@ const getUsers = (req, res) => {
 
 const getCurrentUser = (req, res) => {
   const { _id } = req.body;
-  User.findById({ _id: _id })
+  User.findById({ _id })
     .then(user => {
+      console.log(user);
       if(!user) {
         return res.status(NOT_FOUND).send({ message: 'Запрашиваемый пользователь не найден' })
       }
@@ -27,7 +28,7 @@ const getCurrentUser = (req, res) => {
     })
     .catch(err => {
       if(err.name === 'CastError') {
-        res.status(BAD_REQUEST).send({ message: 'Ошибка ввода данных' })
+        res.status(NOT_FOUND).send({ message: 'Запрашиваемый пользователь не найден' })
         return
       }
       else{
@@ -59,7 +60,7 @@ const createUsers = (req, res) => {
 
 const updateUser = (req, res) => {
   const { name, about } = req.body;
-  User.findByIdAndUpdate(req.user._id, { name, about }, { new: true })
+  User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
     .then(user => {
       res.send({ user })
     })
