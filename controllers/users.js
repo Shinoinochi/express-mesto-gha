@@ -17,17 +17,16 @@ const getUsers = (req, res) => {
 const getCurrentUser = (req, res) => {
   User.findById(req.params.userId)
     .then(user => {
-      if(!user) {
-        return res.status(BAD_REQUEST).send({ message: 'Запрашиваемый пользователь не найден' })
-      }
-      else(
         res.send({ user })
-      )
     })
     .catch(err => {
+      console.log(err.name);
       if(err.name === 'CastError') {
-        res.status(NOT_FOUND).send({ message: 'Запрашиваемый пользователь не найден' })
+        res.status(BAD_REQUEST).send({ message: 'Запрашиваемый пользователь не найден' })
         return
+      }
+      else if(err.name === 'NotFound') {
+        res.status(NOT_FOUND).send({ message: 'Запрашиваемый пользователь не найден' })
       }
       else{
         res.status(SERVER_ERROR).send({ message: 'Ошибка сервера' })
