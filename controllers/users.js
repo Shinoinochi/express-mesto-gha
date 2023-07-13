@@ -39,7 +39,12 @@ const createUsers = (req, res) => {
   const { name, about, avatar } = req.body;
   User.create({ name, about, avatar })
     .then(user => {
-      res.send({ user })
+      if (name && about && avatar) {
+        res.send({ user })
+      }
+      else {
+        return res.status(BAD_REQUEST).send({ message: 'Ошибка ввода данных' })
+      }
     })
     .catch(err => {
       if(err.name === 'ValidationError') {

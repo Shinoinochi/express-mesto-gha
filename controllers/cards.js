@@ -20,7 +20,12 @@ const createCard = (req, res) => {
   const owner = req.user._id;
   Card.create({ name, link, owner })
     .then(card => {
-      res.send({ card })
+      if(name && link && owner) {
+        res.send({ card })
+      }
+      else {
+        return res.status(BAD_REQUEST).send({ message: 'Ошибка ввода данных' })
+      }
     })
     .catch(err => {
       if(err.name === 'ValidationError') {
