@@ -25,7 +25,6 @@ const getCurrentUser = (req, res) => {
         }
       })
     .catch(err => {
-      console.log(err.name);
       if(err.name === 'CastError') {
         res.status(BAD_REQUEST).send({ message: 'Ошибка ввода данных' })
       }

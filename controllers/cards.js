@@ -39,7 +39,14 @@ const createCard = (req, res) => {
 
 const deleteCard = (req, res) => {
   Card.findByIdAndRemove(req.params.cardId)
-    .then(card => res.send({ card }))
+    .then(card => {
+      if(!card) {
+        res.status(BAD_REQUEST).send({ message: 'Неверный ID карточки' })
+      }
+      else {
+        res.send({ card })
+      }
+    })
     .catch((err) => {
       if(err.name === 'CastError') {
         res.status(NOT_FOUND).send({ message: 'Несуществующий ID карточки' })
@@ -54,14 +61,20 @@ const deleteCard = (req, res) => {
 };
 
 const likeCard = (req, res) => {
-  console.log(req.params);
   Card.findByIdAndUpdate(req.params.cardId, { $addToSet: { likes: req.user._id } }, { new: true })
-    .then(card => res.send({ card }))
+    .then(card => {
+      if(!card) {
+        res.status(BAD_REQUEST).send({ message: 'Неверный ID карточки' })
+      }
+      else {
+        res.send({ card })
+      }
+    })
     .catch((err) => {
       if(err.name === 'CastError') {
         res.status(NOT_FOUND).send({ message: 'Несуществующий ID карточки' })
       }
-      else if (err.name === 'NotFound') {
+      if (err.name === 'NotFound') {
         res.status(BAD_REQUEST).send({ message: 'Неверно переданы данные' })
       }
       else {
@@ -72,7 +85,14 @@ const likeCard = (req, res) => {
 
 const dislikeCard = (req, res) => {
   Card.findByIdAndUpdate(req.params.cardId, { $pull: { likes: req.user._id } }, { new: true })
-    .then(card => res.send({ card }))
+    .then(card => {
+      if(!card) {
+        res.status(BAD_REQUEST).send({ message: 'Неверный ID карточки' })
+      }
+      else {
+        res.send({ card })
+      }
+    })
     .catch((err) => {
       if(err.name === 'CastError') {
         res.status(NOT_FOUND).send({ message: 'Несуществующий ID карточки' })
