@@ -38,8 +38,7 @@ const createCard = (req, res) => {
 };
 
 const deleteCard = (req, res) => {
-  const { _id } = req.body;
-  Card.findByIdAndRemove({ _id })
+  Card.findByIdAndRemove(req.params.userId)
     .then(card => res.send({ card }))
     .catch((err) => {
       if(err.name === 'CastError') {
@@ -55,9 +54,7 @@ const deleteCard = (req, res) => {
 };
 
 const likeCard = (req, res) => {
-  const { _id } = req.body;
-  console.log(req.params.cardId, req.user._id);
-  Card.findByIdAndUpdate(_id, { $addToSet: { likes: req.user._id } }, { new: true })
+  Card.findByIdAndUpdate(req.params.userId, { $addToSet: { likes: req.user._id } }, { new: true })
     .then(card => res.send({ card }))
     .catch((err) => {
       if(err.name === 'CastError') {
@@ -73,8 +70,7 @@ const likeCard = (req, res) => {
 };
 
 const dislikeCard = (req, res) => {
-  const { _id } = req.body;
-  Card.findByIdAndUpdate(_id, { $pull: { likes: req.user._id } }, { new: true })
+  Card.findByIdAndUpdate(req.params.userId, { $pull: { likes: req.user._id } }, { new: true })
     .then(card => res.send({ card }))
     .catch((err) => {
       if(err.name === 'CastError') {

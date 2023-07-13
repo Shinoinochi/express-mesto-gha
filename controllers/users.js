@@ -15,10 +15,8 @@ const getUsers = (req, res) => {
 };
 
 const getCurrentUser = (req, res) => {
-  const { _id } = req.body;
-  User.findById({ _id })
+  User.findById(req.params.userId)
     .then(user => {
-      console.log(user);
       if(!user) {
         return res.status(NOT_FOUND).send({ message: 'Запрашиваемый пользователь не найден' })
       }
