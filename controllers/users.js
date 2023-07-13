@@ -18,7 +18,7 @@ const getCurrentUser = (req, res) => {
   User.findById(req.params.userId)
     .then(user => {
       if(!user) {
-        return res.status(NOT_FOUND).send({ message: 'Запрашиваемый пользователь не найден' })
+        return res.status(BAD_REQUEST).send({ message: 'Запрашиваемый пользователь не найден' })
       }
       else(
         res.send({ user })
