@@ -41,7 +41,17 @@ const deleteCard = (req, res) => {
   const { _id } = req.body;
   Card.findByIdAndRemove({ _id })
     .then(card => res.send({ card }))
-    .catch(() => res.status(SERVER_ERROR).send({ message: 'Ошибка сервера' }));
+    .catch((err) => {
+      if(err.name === 'NotFound') {
+        res.status(NOT_FOUND).send({ message: 'Несуществующий ID карточки' })
+      }
+      else if (err.name === 'CastError') {
+        res.status(BAD_REQUEST).send({ message: 'Неверно переданы данные' })
+      }
+      else {
+        res.status(SERVER_ERROR).send({ message: 'Ошибка сервера' })
+      }
+    });
 };
 
 const likeCard = (req, res) => {
