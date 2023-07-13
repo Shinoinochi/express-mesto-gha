@@ -43,10 +43,10 @@ const deleteCard = (req, res) => {
     .then(card => res.send({ card }))
     .catch((err) => {
       if(err.name === 'CastError') {
-        res.status(NOT_FOUND).send({ message: 'Неверно переданы данные' })
+        res.status(NOT_FOUND).send({ message: 'Несуществующий ID карточки' })
       }
       else if (err.name === 'NotFound') {
-        res.status(BAD_REQUEST).send({ message: 'Несуществующий ID карточки' })
+        res.status(BAD_REQUEST).send({ message: 'Неверно переданы данные' })
       }
       else {
         res.status(SERVER_ERROR).send({ message: 'Ошибка сервера' })
@@ -60,11 +60,11 @@ const likeCard = (req, res) => {
   Card.findByIdAndUpdate(_id, { $addToSet: { likes: req.user._id } }, { new: true })
     .then(card => res.send({ card }))
     .catch((err) => {
-      if (err.name === 'CastError') {
-        res.status(NOT_FOUND).send({ message: 'Неверно переданы данные' })
+      if(err.name === 'CastError') {
+        res.status(NOT_FOUND).send({ message: 'Несуществующий ID карточки' })
       }
       else if (err.name === 'NotFound') {
-        res.status(BAD_REQUEST).send({ message: 'Несуществующий ID карточки' })
+        res.status(BAD_REQUEST).send({ message: 'Неверно переданы данные' })
       }
       else {
         res.status(SERVER_ERROR).send({ message: 'Ошибка сервера' })
@@ -78,10 +78,10 @@ const dislikeCard = (req, res) => {
     .then(card => res.send({ card }))
     .catch((err) => {
       if(err.name === 'CastError') {
-        res.status(NOT_FOUND).send({ message: 'Неверно переданы данные' })
+        res.status(NOT_FOUND).send({ message: 'Несуществующий ID карточки' })
       }
       else if (err.name === 'NotFound') {
-        res.status(BAD_REQUEST).send({ message: 'Несуществующий ID карточки' })
+        res.status(BAD_REQUEST).send({ message: 'Неверно переданы данные' })
       }
       else {
         res.status(SERVER_ERROR).send({ message: 'Ошибка сервера' })
