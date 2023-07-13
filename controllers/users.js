@@ -17,13 +17,17 @@ const getUsers = (req, res) => {
 const getCurrentUser = (req, res) => {
   User.findById(req.params.userId)
     .then(user => {
-        res.send({ user })
-    })
+        if(!user) {
+          res.status(res.status(BAD_REQUEST).send({ message: 'Запрашиваемый пользователь не найден' }))
+        }
+        else {
+          res.send({ user });
+        }
+      })
     .catch(err => {
       console.log(err.name);
       if(err.name === 'CastError') {
-        res.status(BAD_REQUEST).send({ message: 'Запрашиваемый пользователь не найден' })
-        return
+        res.status(BAD_REQUEST).send({ message: 'Ошибка ввода данных' })
       }
       else if(err.name === 'NotFound') {
         res.status(NOT_FOUND).send({ message: 'Запрашиваемый пользователь не найден' })
