@@ -17,12 +17,13 @@ app.use((req, res, next) => {
   next();
 });
 
-app.patch('/404', function(req, res){
-  res.status(404).send({ message: 'Здесь ничего нет' });
-});
+
 
 app.use('/users', require('./routes/users'));
 app.use('/cards', require('./routes/cards'));
+app.patch('*', function(req, res){
+  res.status(404).send({ message: 'Здесь ничего нет' });
+});
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.listen(PORT, () => {
