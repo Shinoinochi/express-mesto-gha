@@ -17,7 +17,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.patch('*', function(req, res){
+app.patch('/404', function(req, res){
   res.status(404).send({ message: 'Здесь ничего нет' });
 });
 
