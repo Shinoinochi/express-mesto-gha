@@ -23,8 +23,9 @@ const createCard = (req, res) => {
       res.send({ card })
     })
     .catch((err) => {
+      console.log(err.name);
       if(err.name === 'ValidationError') {
-        res.status().send({ message: 'Ошибка ввода данных'});
+        res.status(BAD_REQUEST).send({ message: 'Ошибка ввода данных'});
       }
       else {
         res.status(SERVER_ERROR).send({ message: 'Ошибка сервера' })
