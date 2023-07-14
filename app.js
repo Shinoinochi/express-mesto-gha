@@ -17,6 +17,10 @@ app.use((req, res, next) => {
   next();
 });
 
+app.patch('*', function(req, res){
+  res.status(404).send({ message: 'Здесь ничего нет' });
+});
+
 app.use('/users', require('./routes/users'));
 app.use('/cards', require('./routes/cards'));
 
