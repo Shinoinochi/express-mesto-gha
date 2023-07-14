@@ -27,13 +27,8 @@ const createCard = (req, res) => {
         return res.status(BAD_REQUEST).send({ message: 'Ошибка ввода данных' })
       }
     })
-    .catch(err => {
-      if(err.name === 'ValidationError') {
-        res.status(BAD_REQUEST).send({ message: 'Ошибка ввода данных' })
-      }
-      else{
+    .catch(() => {
         res.status(SERVER_ERROR).send({ message: 'Ошибка сервера' })
-      }
     });
 };
 
@@ -70,9 +65,6 @@ const likeCard = (req, res) => {
     .catch((err) => {
       if(err.name === 'CastError') {
         res.status(BAD_REQUEST).send({ message: 'Несуществующий ID карточки' })
-      }
-      if (err.name === 'NotFound') {
-        res.status(BAD_REQUEST).send({ message: 'Неверно переданы данные' })
       }
       else {
         res.status(SERVER_ERROR).send({ message: 'Ошибка сервера' })

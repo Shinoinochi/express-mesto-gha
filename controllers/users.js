@@ -28,9 +28,6 @@ const getCurrentUser = (req, res) => {
       if(err.name === 'CastError') {
         res.status(BAD_REQUEST).send({ message: 'Ошибка ввода данных' })
       }
-      else if(err.name === 'NotFound') {
-        res.status(NOT_FOUND).send({ message: 'Запрашиваемый пользователь не найден' })
-      }
       else{
         res.status(SERVER_ERROR).send({ message: 'Ошибка сервера' })
       }
