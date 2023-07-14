@@ -18,17 +18,17 @@ const getCards = (req, res) => {
 const createCard = (req, res) => {
   const { name, link } = req.body;
   const owner = req.user._id;
-  Card.create({ name, link, owner }), { runValidators: true }
+  Card.create({ name, link, owner })
     .then(card => {
-      if(name && link && owner) {
-        res.send({ card })
+      res.send({ card })
+    })
+    .catch((err) => {
+      if(err.name === 'ValidationError') {
+        res.status().send({ message: 'Ошибка ввода данных'});
       }
       else {
-        return res.status(BAD_REQUEST).send({ message: 'Ошибка ввода данных' })
-      }
-    })
-    .catch(() => {
         res.status(SERVER_ERROR).send({ message: 'Ошибка сервера' })
+      }
     });
 };
 
