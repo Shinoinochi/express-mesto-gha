@@ -3,11 +3,13 @@ const path = require('path');
 const mongoose = require('mongoose');
 const { PORT = 3000, BD_URL = 'mongodb://127.0.0.1:27017/mestodb' } = process.env;
 const app = express();
+const helmet = require('helmet');
 
 mongoose.connect(BD_URL, {
   useNewUrlParser: true,
 });
 
+app.use(helmet());
 app.use(express.json());
 
 app.use((req, res, next) => {
