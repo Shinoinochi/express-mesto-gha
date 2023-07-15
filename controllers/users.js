@@ -22,7 +22,9 @@ const getCurrentUser = (req, res) => {
       })
     .catch(err => {
         if (err.message === 'NotValidId') {
-          res.status(NOT_FOUND).send({ message: 'Пользователь не найден' })
+          res.status(NOT_FOUND).send({ message: 'Пользователя нет в базе данных' })
+        } else if(err.name === 'CastError') {
+          res.status(BAD_REQUEST).send({ message: 'Некорректное id пользователя' })
         }
         else{
           res.status(SERVER_ERROR).send({ message: 'Ошибка сервера' })
