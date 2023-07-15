@@ -21,7 +21,7 @@ const createCard = (req, res) => {
   Card.create({ name, link, owner })
     .then(card => {
       if(name && link && owner) {
-        res.send({ card })
+        res.status(201).send({ card })
       }
       else {
         return res.status(BAD_REQUEST).send({ message: 'Ошибка ввода данных' })
