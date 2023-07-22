@@ -1,3 +1,5 @@
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const { BAD_REQUEST, NOT_FOUND, SERVER_ERROR } = require('../errors/errors');
 
@@ -11,6 +13,21 @@ const getUsers = (req, res) => {
       );
     })
     .catch(() => res.status(SERVER_ERROR).send({ message: 'Ошибка сервера' }));
+};
+
+const login = (req, res) => {
+  const { email, password } = req.body;
+  console.log(email, password);
+  return User.findUserByCredentials(email, password)
+    .then((user) => {
+      res.send({
+        token: jwt.sign({ _id: user._id }, 'secret', { expiresIn: '30d' }),
+      });
+    })
+    .catch((err) => {
+      console.log(err.name);
+      res.status(500).send({ message: 'Ошибка' });
+    });
 };
 
 const getCurrentUser = (req, res) => {
@@ -30,11 +47,17 @@ const getCurrentUser = (req, res) => {
     });
 };
 
-const createUsers = (req, res) => {
-  const { name, about, avatar } = req.body;
-  User.create({ name, about, avatar })
+const createUser = (req, res) => {
+  const {
+    name, about, avatar, email, password,
+  } = req.body;
+  bcrypt.hash(password, 10)
+    .then((hash) => User.create({
+      name, about, avatar, email, password: hash,
+    }))
     .then((user) => {
-      if (name && about && avatar) {
+      console.log(user);
+      if (email && password) {
         res.status(201).send({ user });
       } else {
         res.status(BAD_REQUEST).send({ message: 'Ошибка ввода данных' });
@@ -79,10 +102,31 @@ const updateAvatarUser = (req, res) => {
     });
 };
 
+const getUser = (req, res) => {
+  const { userId } = req.params;
+  console.log(req.params);
+  User.findById(userId)
+    .orFail(new Error('NotValidId'))
+    .then((user) => {
+      res.status(200).send({ user });
+    })
+    .catch((err) => {
+      if (err.message === 'NotValidId') {
+        res.status(NOT_FOUND).send({ message: 'Пользователя нет в базе данных' });
+      } else if (err.name === 'CastError') {
+        res.status(BAD_REQUEST).send({ message: 'Некорректное id пользователя' });
+      } else {
+        res.status(SERVER_ERROR).send({ message: 'Ошибка сервера' });
+      }
+    });
+};
+
 module.exports = {
   getUsers,
   getCurrentUser,
-  createUsers,
+  createUser,
   updateUser,
   updateAvatarUser,
+  login,
+  getUser,
 };
