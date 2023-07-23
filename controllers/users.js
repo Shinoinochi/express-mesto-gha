@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const NotFoundError = require('../errors/not-found-err');
 const BadRequestError = require('../errors/bad-request-err');
+const ConflictError = require('../errors/conflict-err');
 
 const getUsers = (req, res, next) => {
   User.find({})
@@ -39,7 +40,6 @@ const getCurrentUser = (req, res, next) => {
       } else if (err.name === 'CastError') {
         throw new BadRequestError('Некорректное id пользователя');
       }
-      next(err);
     })
     .catch(next);
 };
@@ -62,8 +62,9 @@ const createUser = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         throw new BadRequestError('Ошибка ввода данных');
+      } else if (err.code === 11000) {
+        throw new ConflictError('Пользователь с такой почтой уже существует');
       }
-      next(err);
     })
     .catch(next);
 };
@@ -78,7 +79,6 @@ const updateUser = (req, res, next) => {
       if (err.name === 'ValidationError') {
         throw new BadRequestError('Ошибка ввода данных');
       }
-      next(err);
     })
     .catch(next);
 };
@@ -111,7 +111,6 @@ const getUser = (req, res, next) => {
       } else if (err.name === 'CastError') {
         throw new BadRequestError('Некоректный ID пользователя');
       }
-      next(err);
     })
     .catch(next);
 };
