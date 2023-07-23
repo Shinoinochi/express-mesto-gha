@@ -42,11 +42,10 @@ app.post('/signup', celebrate({
   }),
 }), createUser);
 
-app.use(auth);
-app.use(errors());
 app.use('/users', require('./routes/users'));
 app.use('/cards', require('./routes/cards'));
 
+app.use(errors());
 app.patch('*', (req, res) => {
   res.status(404).send({ message: 'Здесь ничего нет' });
 });
