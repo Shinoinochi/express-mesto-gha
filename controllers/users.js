@@ -21,9 +21,8 @@ const login = (req, res, next) => {
   const { email, password } = req.body;
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      res.send({
-        token: jwt.sign({ _id: user._id }, 'super-strong-secret', { expiresIn: '30d' }),
-      });
+      const token = jwt.sign({ _id: user._id }, 'super-strong-secret', { expiresIn: '30d' });
+      res.send({ token });
     })
     .catch(next);
 };
