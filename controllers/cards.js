@@ -35,15 +35,23 @@ const createCard = (req, res) => {
 };
 
 const deleteCard = (req, res) => {
-  Card.findByIdAndRemove(req.params.cardId)
+  const owner = '64ba9549d04bc39100b3ae52';
+  Card.findById(req.params.cardId)
     .then((card) => {
       if (!card) {
         res.status(NOT_FOUND).send({ message: 'Неверный ID карточки' });
+      }
+      if (owner !== String(card.owner)) {
+        res.status(403).send({ message: 'Нет доступа для удаления' });
       } else {
-        res.send({ card });
+        card.deleteOne();
       }
     })
+    .then((deleted) => {
+      res.send({ deleted });
+    })
     .catch((err) => {
+      console.log(err.name);
       if (err.name === 'CastError') {
         res.status(BAD_REQUEST).send({ message: 'Неверно переданы данные' });
       } else {

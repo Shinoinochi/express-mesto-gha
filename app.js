@@ -15,21 +15,11 @@ mongoose.connect(BD_URL, {
 app.use(helmet());
 app.use(express.json());
 
-app.use((req, res, next) => {
-  req.user = {
-    _id: '64ae5c7281ea18f579667255',
-  };
-
-  next();
-});
-
-app.use('/users', require('./routes/users'));
-app.use('/cards', require('./routes/cards'));
-
 app.post('/signin', login);
 app.post('/signup', createUser);
 
-app.use(auth);
+app.use('/users', require('./routes/users'));
+app.use('/cards', require('./routes/cards'));
 
 app.patch('*', (req, res) => {
   res.status(404).send({ message: 'Здесь ничего нет' });
