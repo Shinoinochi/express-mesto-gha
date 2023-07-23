@@ -1,6 +1,7 @@
 const express = require('express');
 const path = require('path');
 const mongoose = require('mongoose');
+const { errors } = require('celebrate');
 
 const { PORT = 3000, BD_URL = 'mongodb://127.0.0.1:27017/mestodb' } = process.env;
 const app = express();
@@ -21,6 +22,7 @@ app.post('/signup', createUser);
 app.use('/users', auth, require('./routes/users'));
 app.use('/cards', auth, require('./routes/cards'));
 
+app.use(errors());
 app.patch('*', (req, res) => {
   res.status(404).send({ message: 'Здесь ничего нет' });
 });
