@@ -62,6 +62,7 @@ const likeCard = (req, res, next) => {
       if (err.name === 'CastError') {
         throw new BadRequestError('Несуществующий ID карточки');
       }
+      next(err);
     })
     .catch(next);
 };
@@ -79,6 +80,7 @@ const dislikeCard = (req, res, next) => {
       if (err.name === 'CastError') {
         throw new BadRequestError('Несуществующий ID карточки');
       }
+      next(err);
     })
     .catch(next);
 };

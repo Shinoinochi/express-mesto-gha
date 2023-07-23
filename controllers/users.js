@@ -39,6 +39,7 @@ const getCurrentUser = (req, res, next) => {
       } else if (err.name === 'CastError') {
         throw new BadRequestError('Некорректное id пользователя');
       }
+      next(err);
     })
     .catch(next);
 };
@@ -52,17 +53,17 @@ const createUser = (req, res, next) => {
       name, about, avatar, email, password: hash,
     }))
     .then((user) => {
-      console.log(user);
       if (email && password) {
         res.status(201).send({ user });
       } else {
-        throw new BadRequestError('Некорректное id пользователя');
+        throw new BadRequestError('Ошибка ввода данных');
       }
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
         throw new BadRequestError('Ошибка ввода данных');
       }
+      next(err);
     })
     .catch(next);
 };
@@ -77,6 +78,7 @@ const updateUser = (req, res, next) => {
       if (err.name === 'ValidationError') {
         throw new BadRequestError('Ошибка ввода данных');
       }
+      next(err);
     })
     .catch(next);
 };
@@ -109,6 +111,7 @@ const getUser = (req, res, next) => {
       } else if (err.name === 'CastError') {
         throw new BadRequestError('Некоректный ID пользователя');
       }
+      next(err);
     })
     .catch(next);
 };
