@@ -1,20 +1,22 @@
 const Card = require('../models/card');
-const { BAD_REQUEST, NOT_FOUND, SERVER_ERROR } = require('../errors/errors');
+const NotFoundError = require('../errors/not-found-err');
+const BadRequestError = require('../errors/bad-request-err');
+const AccessDeniedError = require('../errors/access-denied-err');
 
-const getCards = (req, res) => {
+const getCards = (req, res, next) => {
   Card.find({})
     .populate('owner', 'likes')
     .then((cards) => {
       if (cards.length === 0) {
-        res.status(NOT_FOUND).send({ message: 'Карточки не найдены' });
+        throw new NotFoundError('Карточки не найдены');
       } (
         res.send({ cards })
       );
     })
-    .catch(() => res.status(SERVER_ERROR).send({ message: 'Ошибка сервера' }));
+    .catch(next);
 };
 
-const createCard = (req, res) => {
+const createCard = (req, res, next) => {
   const { name, link } = req.body;
   const owner = req.user._id;
   Card.create({ name, link, owner })
@@ -22,27 +24,21 @@ const createCard = (req, res) => {
       if (name && link && owner) {
         res.status(201).send({ card });
       } else {
-        res.status(BAD_REQUEST).send({ message: 'Ошибка ввода данных' });
+        throw new BadRequestError('Ошибка ввода данных');
       }
     })
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(BAD_REQUEST).send({ message: 'Ошибка ввода данных' });
-      } else {
-        res.status(SERVER_ERROR).send({ message: 'Ошибка сервера' });
-      }
-    });
+    .catch(next);
 };
 
-const deleteCard = (req, res) => {
-  const owner = '64ba9549d04bc39100b3ae52';
+const deleteCard = (req, res, next) => {
+  const owner = req.user._id;
   Card.findById(req.params.cardId)
     .then((card) => {
       if (!card) {
-        res.status(NOT_FOUND).send({ message: 'Неверный ID карточки' });
+        throw new NotFoundError('Неверный ID карточки');
       }
       if (owner !== String(card.owner)) {
-        res.status(403).send({ message: 'Нет доступа для удаления' });
+        throw new AccessDeniedError('Нет доступа для удаления');
       } else {
         card.deleteOne();
       }
@@ -50,50 +46,41 @@ const deleteCard = (req, res) => {
     .then((deleted) => {
       res.send({ deleted });
     })
-    .catch((err) => {
-      console.log(err.name);
-      if (err.name === 'CastError') {
-        res.status(BAD_REQUEST).send({ message: 'Неверно переданы данные' });
-      } else {
-        res.status(SERVER_ERROR).send({ message: 'Ошибка сервера' });
-      }
-    });
+    .catch(next);
 };
 
-const likeCard = (req, res) => {
+const likeCard = (req, res, next) => {
   Card.findByIdAndUpdate(req.params.cardId, { $addToSet: { likes: req.user._id } }, { new: true })
     .then((card) => {
       if (!card) {
-        res.status(NOT_FOUND).send({ message: 'Неверный ID карточки' });
+        throw new NotFoundError('Неверный ID карточки');
       } else {
         res.send({ card });
       }
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(BAD_REQUEST).send({ message: 'Несуществующий ID карточки' });
-      } else {
-        res.status(SERVER_ERROR).send({ message: 'Ошибка сервера' });
+        throw new BadRequestError('Несуществующий ID карточки');
       }
-    });
+    })
+    .catch(next);
 };
 
-const dislikeCard = (req, res) => {
+const dislikeCard = (req, res, next) => {
   Card.findByIdAndUpdate(req.params.cardId, { $pull: { likes: req.user._id } }, { new: true })
     .then((card) => {
       if (!card) {
-        res.status(NOT_FOUND).send({ message: 'Неверный ID карточки' });
+        throw new NotFoundError('Неверный ID карточки');
       } else {
         res.send({ card });
       }
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(BAD_REQUEST).send({ message: 'Неверно переданы данные' });
-      } else {
-        res.status(SERVER_ERROR).send({ message: 'Ошибка сервера' });
+        throw new BadRequestError('Несуществующий ID карточки');
       }
-    });
+    })
+    .catch(next);
 };
 
 module.exports = {
