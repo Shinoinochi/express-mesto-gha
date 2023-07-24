@@ -6,6 +6,15 @@ const AuthError = require('../errors/auth-err');
 
 const userSchema = new mongoose.Schema(
   {
+    email: {
+      type: String,
+      unique: true,
+      require: [true, 'Поле email должно быть заполнено'],
+      validate: {
+        validator: (v) => isEmail(v),
+        message: 'Неправильный формат почты',
+      },
+    },
     name: {
       type: String,
       minlength: [2, 'Минимальное длина поля name 2 символа'],
@@ -25,15 +34,6 @@ const userSchema = new mongoose.Schema(
         message: 'Некорректный URL',
       },
       default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
-    },
-    email: {
-      type: String,
-      unique: true,
-      require: [true, 'Поле email должно быть заполнено'],
-      validate: {
-        validator: (v) => isEmail(v),
-        message: 'Неправильный формат почты',
-      },
     },
     password: {
       type: String,

@@ -52,13 +52,9 @@ const createUser = (req, res, next) => {
       name, about, avatar, email, password: hash,
     }))
     .then((user) => {
-      if (email && password) {
-        res.status(201).send({
-          email: user.email, name: user.name, about: user.about, avatar: user.avatar, _id: user._id,
-        });
-      } else {
-        throw new BadRequestError('Ошибка ввода данных');
-      }
+      res.status(201).send({
+        email: user.email, name: user.name, about: user.about, avatar: user.avatar, _id: user._id,
+      });
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
