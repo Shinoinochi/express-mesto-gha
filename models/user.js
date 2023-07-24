@@ -10,13 +10,13 @@ const userSchema = new mongoose.Schema(
       type: String,
       minlength: [2, 'Минимальное длина поля name 2 символа'],
       maxlength: [30, 'Максимальная длина поля name 30 символов'],
-      default: 'Уточка',
+      default: 'Жак-Ив Кусто',
     },
     about: {
       type: String,
       minlength: [2, 'Минимальное длина поля about 2 символа'],
       maxlength: [30, 'Максимальная длина поля about 30 символов'],
-      default: 'Кря-кря',
+      default: 'Исследователь',
     },
     avatar: {
       type: String,
@@ -24,7 +24,7 @@ const userSchema = new mongoose.Schema(
         validator: (URL) => validator.isURL(URL),
         message: 'Некорректный URL',
       },
-      default: 'https://kartinkin.net/uploads/posts/2022-02/1644904275_66-kartinkin-net-p-utochki-kartinki-78.jpg',
+      default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
     },
     email: {
       type: String,

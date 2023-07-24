@@ -2,7 +2,6 @@ const express = require('express');
 const path = require('path');
 const mongoose = require('mongoose');
 const { errors } = require('celebrate');
-const validator = require('validator');
 const { celebrate, Joi } = require('celebrate');
 
 const { PORT = 3000, BD_URL = 'mongodb://127.0.0.1:27017/mestodb' } = process.env;
@@ -10,14 +9,9 @@ const app = express();
 const helmet = require('helmet');
 const { login, createUser } = require('./controllers/users');
 const auth = require('./middlewares/auth');
-const BadRequestError = require('./errors/bad-request-err');
 
-const validUrl = (url) => {
-  if (validator.isUrl(url)) {
-    return url;
-  }
-  throw new BadRequestError('Некоректный URL');
-};
+// eslint-disable-next-line no-useless-escape
+const regex = /https?:\/\/(?:www\.)?([-a-zA-Z0-9@:%._\+~#=]{2,}\.[a-z]{2,}\b)*(\/[\/\d\w\.-]*)*(?:[\?])*(.+)*[#]?/;
 
 mongoose.connect(BD_URL, {
   useNewUrlParser: true,
@@ -36,7 +30,7 @@ app.post('/signup', celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
-    avatar: Joi.string(),
+    avatar: Joi.string().pattern(regex),
     email: Joi.string().required().email(),
     password: Joi.string().required().min(8),
   }),

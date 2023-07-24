@@ -6,6 +6,9 @@ const {
   getCards, createCard, deleteCard, likeCard, dislikeCard,
 } = require('../controllers/cards');
 
+// eslint-disable-next-line no-useless-escape
+const regex = /https?:\/\/(?:www\.)?([-a-zA-Z0-9@:%._\+~#=]{2,}\.[a-z]{2,}\b)*(\/[\/\d\w\.-]*)*(?:[\?])*(.+)*[#]?/;
+
 const validUrl = (url) => {
   if (validator.isUrl(url)) {
     return url;
@@ -16,7 +19,7 @@ router.get('/', getCards);
 router.post('/', celebrate({
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(30),
-    link: Joi.string().required().custom(validUrl),
+    link: Joi.string().required().pattern(regex),
   }),
 }), createCard);
 router.delete('/:cardId', celebrate({

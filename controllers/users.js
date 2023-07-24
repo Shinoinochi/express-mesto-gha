@@ -53,7 +53,9 @@ const createUser = (req, res, next) => {
     }))
     .then((user) => {
       if (email && password) {
-        res.status(201).send({ user });
+        res.status(201).send({
+          email: user.email, name: user.name, about: user.about, avatar: user.avatar, _id: user._id,
+        });
       } else {
         throw new BadRequestError('Ошибка ввода данных');
       }
@@ -98,8 +100,7 @@ const updateAvatarUser = (req, res, next) => {
 };
 
 const getUser = (req, res, next) => {
-  const { userId } = req.params;
-  console.log(req.params);
+  const userId = req.user._id;
   User.findById(userId)
     .orFail(new Error('NotValidId'))
     .then((user) => {
