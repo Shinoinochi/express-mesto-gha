@@ -7,11 +7,7 @@ const getCards = (req, res, next) => {
   Card.find({})
     .populate('owner', 'likes')
     .then((cards) => {
-      if (cards.length === 0) {
-        throw new NotFoundError('Карточки не найдены');
-      } (
-        res.send({ cards })
-      );
+      res.status(200).send({ cards });
     })
     .catch(next);
 };

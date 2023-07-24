@@ -1,20 +1,11 @@
 const router = require('express').Router();
-const validator = require('validator');
 const { celebrate, Joi } = require('celebrate');
-const BadRequestError = require('../errors/bad-request-err');
 const {
   getUsers, getCurrentUser, updateUser, updateAvatarUser, getUser,
 } = require('../controllers/users');
 
 // eslint-disable-next-line no-useless-escape
 const regex = /https?:\/\/(?:www\.)?([-a-zA-Z0-9@:%._\+~#=]{2,}\.[a-z]{2,}\b)*(\/[\/\d\w\.-]*)*(?:[\?])*(.+)*[#]?/;
-
-const validUrl = (url) => {
-  if (validator.isUrl(url)) {
-    return url;
-  }
-  throw new BadRequestError('Некоректный URL');
-};
 
 router.get('/', getUsers);
 router.get('/me', getUser);
