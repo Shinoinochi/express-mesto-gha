@@ -7,13 +7,7 @@ const ConflictError = require('../errors/conflict-err');
 
 const getUsers = (req, res, next) => {
   User.find({})
-    .then((users) => {
-      if (users.length === 0) {
-        throw new NotFoundError('Пользователи не найдены');
-      } (
-        res.send({ users })
-      );
-    })
+    .then((users) => res.send({ users }))
     .catch(next);
 };
 
@@ -35,12 +29,13 @@ const getCurrentUser = (req, res, next) => {
     })
     .catch((err) => {
       if (err.message === 'NotValidId') {
-        throw new NotFoundError('Пользователя нет в базе данных');
+        next(new NotFoundError('Пользователя нет в базе данных'));
       } else if (err.name === 'CastError') {
-        throw new BadRequestError('Некорректное id пользователя');
+        next(new BadRequestError('Некорректное id пользователя'));
+      } else {
+        next(err);
       }
-    })
-    .catch(next);
+    });
 };
 
 const createUser = (req, res, next) => {
@@ -58,13 +53,13 @@ const createUser = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        throw new BadRequestError('Ошибка ввода данных');
+        next(new BadRequestError('Ошибка ввода данных'));
       } else if (err.code === 11000) {
-        throw new ConflictError('Пользователь с такой почтой уже существует');
+        next(new ConflictError('Пользователь с такой почтой уже существует'));
+      } else {
+        next(err);
       }
-      next(err);
-    })
-    .catch(next);
+    });
 };
 
 const updateUser = (req, res, next) => {
@@ -75,10 +70,11 @@ const updateUser = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        throw new BadRequestError('Ошибка ввода данных');
+        next(new BadRequestError('Ошибка ввода данных'));
+      } else {
+        next(err);
       }
-    })
-    .catch(next);
+    });
 };
 
 const updateAvatarUser = (req, res, next) => {
@@ -89,10 +85,11 @@ const updateAvatarUser = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        throw new BadRequestError('Ошибка ввода данных');
+        next(new BadRequestError('Ошибка ввода данных'));
+      } else {
+        next(err);
       }
-    })
-    .catch(next);
+    });
 };
 
 const getUser = (req, res, next) => {
@@ -104,12 +101,13 @@ const getUser = (req, res, next) => {
     })
     .catch((err) => {
       if (err.message === 'NotValidId') {
-        throw new NotFoundError('Пользователя нет в базе данных');
+        next(new NotFoundError('Пользователя нет в базе данных'));
       } else if (err.name === 'CastError') {
-        throw new BadRequestError('Некоректный ID пользователя');
+        next(new BadRequestError('Некоректный ID пользователя'));
+      } else {
+        next(err);
       }
-    })
-    .catch(next);
+    });
 };
 
 module.exports = {

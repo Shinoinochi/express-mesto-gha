@@ -17,13 +17,15 @@ const createCard = (req, res, next) => {
   const owner = req.user._id;
   Card.create({ name, link, owner })
     .then((card) => {
-      if (name && link && owner) {
-        res.status(201).send({ card });
-      } else {
-        throw new BadRequestError('Ошибка ввода данных');
-      }
+      res.status(201).send({ card });
     })
-    .catch(next);
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        next(new BadRequestError('Ошибка ввода данных'));
+      } else {
+        next(err);
+      }
+    });
 };
 
 const deleteCard = (req, res, next) => {
@@ -36,7 +38,7 @@ const deleteCard = (req, res, next) => {
       if (owner !== String(card.owner)) {
         throw new AccessDeniedError('Нет доступа для удаления');
       } else {
-        card.deleteOne();
+        return card.deleteOne();
       }
     })
     .then((deleted) => {
@@ -56,11 +58,11 @@ const likeCard = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        throw new BadRequestError('Несуществующий ID карточки');
+        next(new BadRequestError('Несуществующий ID карточки'));
+      } else {
+        next(err);
       }
-      next(err);
-    })
-    .catch(next);
+    });
 };
 
 const dislikeCard = (req, res, next) => {
@@ -74,11 +76,11 @@ const dislikeCard = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        throw new BadRequestError('Несуществующий ID карточки');
+        next(new BadRequestError('Несуществующий ID карточки'));
+      } else {
+        next(err);
       }
-      next(err);
-    })
-    .catch(next);
+    });
 };
 
 module.exports = {

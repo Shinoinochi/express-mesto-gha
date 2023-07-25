@@ -1,17 +1,13 @@
 const express = require('express');
-const path = require('path');
 const mongoose = require('mongoose');
 const { errors } = require('celebrate');
-const { celebrate, Joi } = require('celebrate');
 
 const { PORT = 3000, BD_URL = 'mongodb://127.0.0.1:27017/mestodb' } = process.env;
 const app = express();
 const helmet = require('helmet');
-const { login, createUser } = require('./controllers/users');
-const auth = require('./middlewares/auth');
-
-// eslint-disable-next-line no-useless-escape
-const regex = /https?:\/\/(?:www\.)?([-a-zA-Z0-9@:%._\+~#=]{2,}\.[a-z]{2,}\b)*(\/[\/\d\w\.-]*)*(?:[\?])*(.+)*[#]?/;
+const hadleErrors = require('./middlewares/errors');
+const routes = require('./routes');
+const NotFoundError = require('./errors/not-found-err');
 
 mongoose.connect(BD_URL, {
   useNewUrlParser: true,
@@ -19,42 +15,12 @@ mongoose.connect(BD_URL, {
 
 app.use(helmet());
 app.use(express.json());
-
-app.post('/signin', celebrate({
-  body: Joi.object().keys({
-    email: Joi.string().required().email(),
-    password: Joi.string().required().min(8),
-  }),
-}), login);
-app.post('/signup', celebrate({
-  body: Joi.object().keys({
-    name: Joi.string().min(2).max(30),
-    about: Joi.string().min(2).max(30),
-    avatar: Joi.string().pattern(regex),
-    email: Joi.string().required().email(),
-    password: Joi.string().required().min(8),
-  }),
-}), createUser);
-
-app.use(auth);
-app.use('/users', require('./routes/users'));
-app.use('/cards', require('./routes/cards'));
-
+app.use(routes);
 app.use(errors());
-app.patch('*', (req, res) => {
-  res.status(404).send({ message: 'Здесь ничего нет' });
+app.use('*', () => {
+  throw new NotFoundError('Здесь ничего нет');
 });
-
-app.use(express.static(path.join(__dirname, 'public')));
-app.use((err, req, res, next) => {
-  const { statusCode = 500, message } = err;
-  res.status(statusCode).send({
-    message: statusCode === 500
-      ? 'На сервере произошка ошибка'
-      : message,
-  });
-  next();
-});
+app.use(hadleErrors);
 
 app.listen(PORT, () => {
   console.log(`Сервер запущен на порту ${PORT}`);
